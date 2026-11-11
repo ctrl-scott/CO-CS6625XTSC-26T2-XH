@@ -1,235 +1,146 @@
-----------/////////////////////--
+# Homework 5: Decision Tree Phishing Detection
 
----------------------------------
+**Machine Learning-Based Phishing URL Detection and Feature Analysis**
 
-running !pip install -v -q ucimlrepo
-running !pip install scikit-learn
-Requirement already satisfied: ucimlrepo in /usr/local/lib/python3.13/dist-packages (0.0.7)
-Requirement already satisfied: pandas>=1.0.0 in /usr/local/lib/python3.13/dist-packages (from ucimlrepo) (2.2.3)
-Requirement already satisfied: certifi>=2020.12.5 in /usr/local/lib/python3.13/dist-packages (from ucimlrepo) (2026.10.23)
-Requirement already satisfied: numpy>=1.26.0 in /usr/local/lib/python3.13/dist-packages (from pandas>=1.0.0->ucimlrepo) (2.4.6)
-Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.13/dist-packages (from pandas>=1.0.0->ucimlrepo) (2.9.0.post0)
-Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.13/dist-packages (from pandas>=1.0.0->ucimlrepo) (2025.2)
-Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.13/dist-packages (from pandas>=1.0.0->ucimlrepo) (2026.6)
-Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.13/dist-packages (from python-dateutil>=2.8.2->pandas>=1.0.0->ucimlrepo) (1.17.0)
-Requirement already satisfied: scikit-learn in /usr/local/lib/python3.13/dist-packages (1.6.1)
-Requirement already satisfied: numpy>=1.19.5 in /usr/local/lib/python3.13/dist-packages (from scikit-learn) (2.4.6)
-Requirement already satisfied: scipy>=1.6.0 in /usr/local/lib/python3.13/dist-packages (from scikit-learn) (1.16.3)
-Requirement already satisfied: joblib>=1.2.0 in /usr/local/lib/python3.13/dist-packages (from scikit-learn) (1.6.0)
-Requirement already satisfied: threadpoolctl>=3.1.0 in /usr/local/lib/python3.13/dist-packages (from scikit-learn) (3.7.0)
-Requirement already satisfied: cloudpickle>=3.0 in /usr/local/lib/python3.13/dist-packages (from joblib>=1.2.0->scikit-learn) (3.1.2)
----------------------------------
+**Charles S. Owen**  
+Department of Computer Science, Troy University  
+CS6625XTSC-26T2 — Machine Learning-Based Phishing URL Detection and Feature Analysis  
+Dr. Xiaoli Huan  
+November 15, 2026
 
----------------------------------
+---
 
-running imports
+## Preliminary Setup and Dataset Verification
+
+### Package installation
+
+```bash
+pip install ucimlrepo
+pip install scikit-learn
+```
+
+The captured environment reported `ucimlrepo 0.0.7`, `pandas 2.2.3`, `numpy 2.4.6`, and `scikit-learn 1.6.1` as already installed.
+
+### Imports
+
+```python
 import sys
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from ucimlrepo import fetch_ucirepo
-
-
-Importing....
-
----> from ucimlrepo import fetch_ucirepo #used to import UCI datasets
----> from sklearn.model_selection import train_test_split
----> from sklearn.pipeline import Pipeline
----> from sklearn.preprocessing import StandardScaler
----> from sklearn.linear_model import LogisticRegression
----> from sklearn.tree import DecisionTreeClassifier
----> from sklearn.metrics import (accuracy_score,precision_score,recall_score,f1_score)
----> from sklearn.metrics import (confusion_matrix, ConfusionMatrixDisplay)
-
-For Advanced Study 5 we add:
-
----> from sklearn.tree import plot_tree
-***noting variable name changes from X.shape and y.shape***
-**** to X_raw and y_original ****
-
-
-Printing the Feature shapes and Target Shapes
-Printing X_raw.shape in Week 3:  (235795, 54)
-Printing y_original.shape in Week 3: (235795,)
-
-
-
-
-This is the shape of X: 
- (235795, 50)
-
-
-Printing column headers in list ['URLLength', 'DomainLength', 'IsDomainIP', 'URLSimilarityIndex', 'CharContinuationRate', 'TLDLegitimateProb', 'URLCharProb', 'TLDLength', 'NoOfSubDomain', 'HasObfuscation', 'NoOfObfuscatedChar', 'ObfuscationRatio', 'NoOfLettersInURL', 'LetterRatioInURL', 'NoOfDegitsInURL', 'DegitRatioInURL', 'NoOfEqualsInURL', 'NoOfQMarkInURL', 'NoOfAmpersandInURL', 'NoOfOtherSpecialCharsInURL', 'SpacialCharRatioInURL', 'IsHTTPS', 'LineOfCode', 'LargestLineLength', 'HasTitle', 'DomainTitleMatchScore', 'URLTitleMatchScore', 'HasFavicon', 'Robots', 'IsResponsive', 'NoOfURLRedirect', 'NoOfSelfRedirect', 'HasDescription', 'NoOfPopup', 'NoOfiFrame', 'HasExternalFormSubmit', 'HasSocialNet', 'HasSubmitButton', 'HasHiddenFields', 'HasPasswordField', 'Bank', 'Pay', 'Crypto', 'HasCopyrightInfo', 'NoOfImage', 'NoOfCSS', 'NoOfJS', 'NoOfSelfRef', 'NoOfEmptyRef', 'NoOfExternalRef']
-
-
- Part 6: Moving into the data verificaiton and checking 
-
-
-
-Using len(X) and len(y) 
-
-Number of rows in X: 
- 235795
-
-
-Number of values in y: 
- 235795
-------------------------------------
-
-Checking for missing values ------->  Missing Values:  0
-
-
-Ending this section for Week 3 Part 5 & 6
-------------------------------------
-
-----------//////////////////---------
-
-Selecting features: URLLength, DomainLength, URLSimilarityIndex, CharContinuationRate, TLDLegitimateProb 
-
-
-
-Viewing Statistics via X[selected_features].describe().T 
-
-In Part 11 we are now creating the Official Course Split of the Data 
-
----------------------------------------
-
-Using X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.20, random_state=42, stratify=y) 
-
-*** Noting that we keep the variables X_train, X_test, y_train, y_test for the remainder of the course ***
-
-
-
-=================================================================================
-
-                  Homework 5: Decision Tree Phishing Detection
-        
-        Machine Learning-Based Phishing URL Detection and Feature Analysis 
-
-
-                      
-                                Charles S. Owen
-
-                 Department of Computer Science, Troy University
-
-CS6625XTSC-26T2 Machine Learning-Based Phishing URL Detection and Feature Analysis 
-
-                                Dr. Xiaoli Huan
-
-                                November 15, 2026
-
-
-=================================================================================
-
-
-
-
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-
-                              Part 1: Prepared Data
-
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-
-
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-
-              Part 1: Prepared Data -> X_train, X_test, y_train, y_test
-
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-Containing and consisting of:  X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.20,random_state=42,stratify=y) 
-
-At this point you can verify the result indicated by 'Length' by adding 80/20 or (188636 + 47159) = 235795
----------------------------------------
-
-Given the dataset we have applied test_train_split() to 
-We now know that 20% of the data is testing or 20% ---> testing 
-and we now also know that approximately the other 80% of the data will be training 
-or 80% ---> training 
-
-80/20 = 20% is testing and 80% is training, more commonly known as 80/20 split
-
-To verify the assertion we list the shapes of: 
-X_train, X_test, y_train, y_test 
-
-X_train:  (188636, 50)
-X_test:  (47159, 50)
-y_train:  (188636,)
-y_test:  (47159,)
-
-
-
-
-We will now include the recoding of our targets: 
-
-
-
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-
-                     Part 1: Prepared Data -> Recoding Targets
-
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-Phishing = 1 && Legitimate = 0 --> Raw Counts
-0    134850
-1    100945
-Name: count, dtype: int64
-
-
-Updated Label Mapping with Counts 
-
-0 : Legitimate 0
-1 : Phishing 1
-
-
-Repeating y.value_counts --> with label_counts plus .sort_index()
-
-
-Phishing = 1 && Legitimate = 0 --> Raw Counts
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score,
+    confusion_matrix, ConfusionMatrixDisplay
+)
+```
+
+The output notes that earlier `X.shape` and `y.shape` variables were renamed `X_raw` and `y_original`.
+
+### Data dimensions
+
+| Data | Shape |
+|---|---|
+| Original features (`X_raw`) | `(235795, 54)` |
+| Original targets (`y_original`) | `(235795,)` |
+| Prepared features (`X`) | `(235795, 50)` |
+
+The prepared feature dataset and target each have **235,795 rows**, with **0 missing values** reported.
+
+### Prepared feature columns
+
+```text
+URLLength, DomainLength, IsDomainIP, URLSimilarityIndex,
+CharContinuationRate, TLDLegitimateProb, URLCharProb, TLDLength,
+NoOfSubDomain, HasObfuscation, NoOfObfuscatedChar, ObfuscationRatio,
+NoOfLettersInURL, LetterRatioInURL, NoOfDegitsInURL, DegitRatioInURL,
+NoOfEqualsInURL, NoOfQMarkInURL, NoOfAmpersandInURL,
+NoOfOtherSpecialCharsInURL, SpacialCharRatioInURL, IsHTTPS, LineOfCode,
+LargestLineLength, HasTitle, DomainTitleMatchScore, URLTitleMatchScore,
+HasFavicon, Robots, IsResponsive, NoOfURLRedirect, NoOfSelfRedirect,
+HasDescription, NoOfPopup, NoOfiFrame, HasExternalFormSubmit,
+HasSocialNet, HasSubmitButton, HasHiddenFields, HasPasswordField,
+Bank, Pay, Crypto, HasCopyrightInfo, NoOfImage, NoOfCSS, NoOfJS,
+NoOfSelfRef, NoOfEmptyRef, NoOfExternalRef
+```
+
+The preliminary analysis selected `URLLength`, `DomainLength`, `URLSimilarityIndex`, `CharContinuationRate`, and `TLDLegitimateProb`, and referenced `X[selected_features].describe().T` for descriptive statistics. No numerical descriptive-statistics table was included in the source output.
+
+---
+
+## Part 1: Prepared Data
+
+### 1.1 Training and testing split
+
+```python
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.20, random_state=42, stratify=y
+)
+```
+
+The dataset was split into approximately **80% training** and **20% testing** observations.
+
+| Variable | Shape | Observations |
+|---|---|---:|
+| `X_train` | `(188636, 50)` | 188,636 |
+| `X_test` | `(47159, 50)` | 47,159 |
+| `y_train` | `(188636,)` | 188,636 |
+| `y_test` | `(47159,)` | 47,159 |
+
+**Verification:** `188636 + 47159 = 235795`.
+
+These train/test variables are retained for the remainder of the course experiment.
+
+### 1.2 Recoding targets
+
+The output maps the binary targets as follows:
+
+| Target value | Label | Total count |
+|---|---|---:|
+| `0` | Legitimate | 134,850 |
+| `1` | Phishing | 100,945 |
+| **Total** | | **235,795** |
+
+```python
+label_mapping = {0: "Legitimate 0", 1: "Phishing 1"}
+label_counts = y.value_counts().sort_index()
+label_counts.index = label_counts.index.map(label_mapping)
+print(label_counts)
+```
+
+```text
 Legitimate 0    134850
 Phishing 1      100945
 Name: count, dtype: int64
+```
 
+---
 
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
+## Part 2: Train a Decision Tree
 
-                     Part 2: Train a Decision Tree
+### 2.1 Create, fit, and use the model
 
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-
-# Define the model first
+```python
 dt_model = DecisionTreeClassifier(max_depth=5, random_state=42)
-dt_model.fit(X_train, y_train) # Week 5 Stage 5 Part 10 Train the DecisionTree
-dt_pred = dt_model.predict(X_test)  # Week 5 Stage 5 Part 11 Generate Predictions
+dt_model.fit(X_train, y_train)
+dt_pred = dt_model.predict(X_test)
 
-print("------------------------------------
-")
 print("printing dt_pred[:20] with labeling 0 = legitimate and 1 = phishing")
-
 for value in dt_pred[:20]:
     if value == 0:
         print(f"{value} : Legitimate")
     else:
         print(f"{value} : Phishing")
-#print(dt_pred[:20])  # Week 5 Stage 5 Part 11 Generate Predictions
+```
 
-------------------------------------
+### 2.2 First 20 predictions
 
-printing dt_pred[:20] with labeling 0 = legitimate and 1 = phishing
+```text
 0 : Legitimate
 1 : Phishing
 0 : Legitimate
@@ -250,436 +161,155 @@ printing dt_pred[:20] with labeling 0 = legitimate and 1 = phishing
 1 : Phishing
 0 : Legitimate
 1 : Phishing
+```
 
+The captured output additionally describes a **model depth of 4** and **5 leaf nodes** for the model configured with `max_depth=5`. These are retained as reported, without re-running the model.
 
----> Describing model depth when max_depth=5:   4
+---
 
+## Part 3: Evaluate the Model
 
----> Describing model leaf nodes when max_depth=5, with current settings:  5
+### 3.1 Calculate the evaluation metrics
 
+```python
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
+dt_accuracy = accuracy_score(y_test, dt_pred)
+dt_precision = precision_score(y_test, dt_pred)
+dt_recall = recall_score(y_test, dt_pred)
+dt_f1 = f1_score(y_test, dt_pred)
 
+print(f"Accuracy : {dt_accuracy:.4f}")
+print(f"Precision: {dt_precision:.4f}")
+print(f"Recall   : {dt_recall:.4f}")
+print(f"F1-score : {dt_f1:.4f}")
+```
 
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
+### 3.2 Reported results
 
-                     Part 3: Evaluate the Model
+| Metric | Reported value |
+|---|---:|
+| Accuracy | 1.0000 |
+| Precision | 1.0000 |
+| Recall | 1.0000 |
+| F1-score | 1.0000 |
 
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-------------------------------------
+All four values are **as reported in the uploaded output**; the Markdown conversion does not independently verify the experiment.
 
-************************************
+### 3.3 Interpretation of evaluation metrics
 
+**Accuracy:** Of all test URLs, what proportion were classified correctly? Conceptually, correct predictions divided by all predictions. Accuracy alone does not reveal which mistakes were made, an important distinction in cybersecurity.
 
+**Precision:** When the decision tree predicts phishing, how often is it actually phishing? Conceptually, correct phishing predictions divided by all predicted phishing URLs. Low precision corresponds to many false alarms.
 
+**Recall:** Of all actual phishing URLs, how many were detected? Conceptually, detected phishing URLs divided by all actual phishing URLs. Low recall can allow phishing sites to escape detection.
 
+**F1-score:** A single measure of the balance between precision and recall. A higher F1-score generally indicates a better balance between false alerts and missed phishing URLs.
 
-Import:
+**Accuracy versus recall example:** A model could have 99% accuracy and only 50% recall; it might therefore miss approximately half of the phishing URLs. High accuracy alone does not prove strong phishing protection.
 
-from sklearn.metrics import (
-    accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score
-)
-Calculate:
+---
 
-dt_accuracy = accuracy_score(
-    y_test,
-    dt_pred
-)
+## Part 4: Confusion Matrix
 
-dt_precision = precision_score(
-    y_test,
-    dt_pred
-)
+### 4.1 Generate the confusion matrix
 
-dt_recall = recall_score(
-    y_test,
-    dt_pred
-)
+```python
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
-dt_f1 = f1_score(
-    y_test,
-    dt_pred
-)
-Display:
-
-print(
-    f"Accuracy : {dt_accuracy:.4f}"
-)
-
-print(
-    f"Precision: {dt_precision:.4f}"
-)
-
-print(
-    f"Recall   : {dt_recall:.4f}"
-)
-
-print(
-    f"F1-score : {dt_f1:.4f}"
-)
-
-
-
----> Importing from sklearn.metrics import (accuracy_score,precision_score,recall_score,f1_score) 
-
-Collecting variable assignments for dt_accuracy, dt_precision, dt_recall, dt_f1....
-
-
-dt_accuracy = accuracy_score(y_test,dt_pred)
-dt_precision = precision_score(y_test,dt_pred)
-dt_recall = recall_score(y_test,dt_pred)
-dt_f1 = f1_score(y_test,dt_pred)
-
-
-Displaying results of dt_accuracy, dt_precision, dt_recall, dt_f1....
-
-Accuracy : 1.0000 
-
-Precision: 1.0000 
-
-Recall   : 1.0000 
-
-F1-score : 1.0000 
-
-------------------------------------
-
-************************************
-
-
-
-#############################
-
----> Accuracy - Of all test URLs, what proportion were classified correctly?
-
-Conceptually: (Correct Predictions / ALL Predictions)
-
-Meaning that if we have a 0.95 rate of accuracy, then 0.95 test instances were classified correctly.
-Accuracy does not tell us which types of mistakes were made <--> we also note that this is an important distinction in cybersecurity.
-
-############################
-
----> Precision - When the Decision Tree predicts phishing, how often is it correct? how often is it actually phishing?
-
-Conceptually: (Correct Phishing Predictions / ALL Phishing Predictions)
-
-Thus, high precision means that most phishing alerts produced by the system are correct.end=
-Therefore, low precision means that the system is producing many false alarms.
-
-############################
-
----> Recall - Of all actual phishing URLs, how many were detected?
-
-Conceptually: (Detected Phishing URLs / All Actual Phishing URLs)
-
-The recall metric is important for defensive cybersecurity systems, 
-and a model with low recall may allow many phishing websites to escape detection.
-
-############################
-
----> F1-Score - How well does the model balance phishing precision and recall?
-
-Our F1-Score combines Precision + Recall into a single metric. It is useful for concern of balance within the data.
-
-Thus, when we are balancing False Alarms and Missed Phishing URLs, a higher F1-score generally indicates a better balance 
- between precision and recall.
-
-############################
-
-A little further in noting that when Accuracy vs. Recall when Accuracy is 99% and Recall is 50% 
-
-the model could still miss approximately half of the phishing URLs, therefore, high accuracy alone does not prove 
-
-that a phishing detector provides strong protection.
-
-------------------------------------
-
-************************************
-
-
-
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-
-                     Part 4: Confusion Matrix
-
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
----> Importing from sklearn.metrics import (confusion_matrix, ConfusionMatrixDisplay) 
-
-Collecting variable assignments for confusion_matrix, ConfusionMatrixDisplay....
-with cm = confusion_matrix(y_test, dt_pred) 
-then display the resulting assignment of cm with print(cm) 
-
-
-
-The following functions will be used to create the Confusion_Matrix, noting the labeling and the True/False Positive Negative standings 
-
-
-Import:
-
-from sklearn.metrics import (
-    confusion_matrix,
-    ConfusionMatrixDisplay
-)
-Run:
-
-cm = confusion_matrix(
-    y_test,
-    dt_pred
-)
-
+cm = confusion_matrix(y_test, dt_pred)
 print(cm)
-For our labels:
+```
 
-0 = legitimate
-1 = phishing
-the matrix represents:
+The labels are `0 = legitimate` and `1 = phishing`.
 
-Predicted Legitimate	Predicted Phishing
-Actual Legitimate	True Negative	False Positive
-Actual Phishing	False Negative	True Positive
+### 4.2 Reported confusion matrix
 
+| Actual / Predicted | Predicted Legitimate | Predicted Phishing |
+|---|---:|---:|
+| **Actual Legitimate** | 26,970 (TN) | 0 (FP) |
+| **Actual Phishing** | 0 (FN) | 20,189 (TP) |
 
+| Outcome | Count |
+|---|---:|
+| True negatives (TN) | 26,970 |
+| False positives (FP) | 0 |
+| False negatives (FN) | 0 |
+| True positives (TP) | 20,189 |
 
-Predicted Legitimate	Predicted Phishing
-Actual Legitimate	26970	0
-Actual Phishing	0	20189
+The four confusion-matrix cells sum to **47,159**, matching the test-set size.
 
+### 4.3 Plot the confusion matrix
 
-
-
-
-
-True Negatives (Correctly identified Legitimate): 26970
-False Positives (Legitimate incorrectly flagged as Phishing): 0
-False Negatives (Phishing missed by the model): 0
-True Positives (Correctly identified Phishing): 20189
-------------------------------------
-
-************************************
-
-
-
-We will display the confusion matrix with the following functions:
-
+```python
 ConfusionMatrixDisplay(
     confusion_matrix=cm,
-    display_labels=[
-        "Legitimate",
-        "Phishing"
-    ]
+    display_labels=["Legitimate", "Phishing"]
 ).plot()
 
-plt.title(
-    "Decision Tree Confusion Matrix"
-)
-
+plt.title("Decision Tree Confusion Matrix")
 plt.show()
+```
 
+![The Plotted ConfusonMatrix](/assets/images/CS6625XTSC-26T2-cm_ss_for_github_md.png)
 
+### 4.4 Cybersecurity interpretation
 
-------------------------------------
+- **True positive:** A phishing URL was correctly classified as phishing.
+- **True negative:** A legitimate URL was correctly classified as legitimate.
+- **False positive:** A legitimate URL was incorrectly classified as phishing. Possible consequences include an unnecessary warning, legitimate-site blocking, user inconvenience, or extra analyst work.
+- **False negative:** A phishing URL was incorrectly classified as legitimate. Possible consequences include undetected phishing, credential theft, malware delivery, or compromised organizational access.
 
-************************************
+The source emphasizes **recall** because missed phishing URLs can pose serious risks.
 
+### 4.5 Underfitting and overfitting
 
+```python
+train_accuracy = dt_model.score(X_train, y_train)
+test_accuracy = dt_model.score(X_test, y_test)
 
+print("Training accuracy:", train_accuracy)
+print("Testing accuracy:", test_accuracy)
+```
 
+The uploaded output shows this code but does **not** supply the numerical training/testing accuracy values.
 
-**** Cybersecurity Interpretation ****
+**Underfitting:** The model is too simple to capture important patterns. For example, a tree with `max_depth=1` may lack enough decision splits to separate legitimate and phishing URLs. Both training and testing performance can be low.
 
----> True Positive <---
+**Overfitting:** The model learns overly specific rules for the training set. A very deep tree may fit small groups or individual observations, producing extremely high training performance but noticeably lower test performance.
 
-A phishing URL was correctly classified as phishing.
+**Why use `max_depth=5`?** The source gives these reasons:
 
----> True Negative <---
+- Keeps the model manageable.
+- Reduces complexity.
+- Makes interpretation easier.
+- Illustrates control over tree growth.
+- Reduces the tendency toward an extremely large tree.
 
-A legitimate URL was correctly classified as legitimate.
+A depth limit of 5 is **not necessarily universally optimal**; it is the controlled setting for this course experiment.
 
----> False Positive <---
+---
 
-A legitimate URL was incorrectly classified as phishing.
+## Part 5: Short Analysis
 
-Possible consequence:
+### Question 1. What is a decision tree?
 
-* Unnecessary warning
+A decision tree is a supervised machine-learning algorithm that makes predictions by repeatedly asking questions about feature values.
 
-* Legitimate site blocked
+### Question 2. What does `max_depth=5` control?
 
-* User inconvenience
+`max_depth` controls how deep the decision tree is allowed to grow. In this course experiment, `max_depth=5` limits tree complexity. Without that limit, a decision tree may produce increasingly specific rules, learning details unique to the training observations rather than general patterns.
 
-* Additional analyst workload
+### Question 3. Why might a very deep decision tree overfit the training data?
 
----> False Negative <---
+A deep decision tree may create rules for small groups or individual observations, fitting the training data too specifically. These learned details may not generalize to previously unseen examples.
 
-A phishing URL was incorrectly classified as legitimate.
+### Question 4. Which metric do you think is especially important for phishing detection?
 
-Possible consequence:
+The source lists four choices—**Accuracy**, **Precision**, **Recall**, and **F1-score**—but does not include a completed answer for Question 4. The earlier discussion specifically emphasizes recall for phishing detection.
 
-* Phishing page escapes detection
+---
 
-* User may enter credentials
+## Conversion Notes
 
-* Malware could be delivered
-
-* Organizational access could be compromised
-
-This is why recall is an important metric for phishing detection.
-
-
-
-------------------------------------
-
-************************************
-
-
-This will lead us into understanding the set more efficiently when we understand the concepts of 
-Underfitting and Overfitting 
-
-
-
-These scoping and assignment of the variables for X-train, y_train && X_test, y_test are  as follows:
-
-train_accuracy = dt_model.score(
-    X_train,
-    y_train
-)
-
-test_accuracy = dt_model.score(
-    X_test,
-    y_test
-)
-
-print(
-    "Training accuracy:",
-    train_accuracy
-)
-
-print(
-    "Testing accuracy:",
-    test_accuracy
-)
-
-*** NOTE *** If training accuracy is much higher than testing accuracy, this is may be an indicator that
-the model is learning training-specific patterns ---> in that case it leads us to Underfitting and Overfitting *** NOTE ***
-
-------------------------------------
-************************************
-
-Underfitting: A model underfits when it is to simple to learn important patterns 
-
-
-In an example, if max_depth=1 the tree can make very few decisions, at that depth setting it may fail to capture enough information 
-
-to distinguish phishing from legitimate URLs.
-
-Noting a possible result: 
-
-
-* Training performance: Low 
-
-* Testing performance: Low 
-
-
-------------------------------------
-************************************
-
-Overfitting: A model overfits when it learns the training data to specifically. 
-
-
-A very deep Decision Tree may create rules for small groups or individual observations. 
-
-
-Noting a possible pattern in results:
-
-* Training performance: extremely high 
-
-* Testing performance: noticeably lower 
-
-
-Becoming to specific the model has learned details that do not generalize as well to data that it has not yet seen.
-
-
-
-------------------------------------
-************************************
-
-On the usage of max_depth=5? 
-
-
-The usage of max_depth=5 is because: 
-
-
-* Keeps the model manageable 
-
-* Reduces complexity 
-
-* Makes interpretation easier 
-
-* Helps illustrate regularization of tree growth 
-
-* Reduces the tendency toward an extremely large tree 
-
-
-This does not mean that depth 5 is a universally optimal setting, it is the controlled setting for the courses experimentation.
-
-
-
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-
-                     Part 5: Short Analysis
-
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-
-Question 1
-What is a Decision Tree?
-
-Week 5 Stage 5 -> The Decision Tree is what gives us the supervised machine-learning
-algorithm to make predictions by repeatedly asking questions about feature values.
-
-
-
-Question 2
-What does:
-
-max_depth=5
-control?
-
-max_depth controls how deep the Decision Tree is allowed to grow, we are using max_depth=5
-in our course project/experiment to limit the trees complexity, noting that without depth
-restriction we can create a Decision Tree that is increasingly specific with its rule creation.
-
-Thereby creating the issues that may cause the model to learn details that are specific to the training data rather than general patterns.
-
-Question 3
-Why might a very deep Decision Tree overfit the training data?
-
-A max_depth that is to complex may lead the model to overit when it learns the training data to specifically, 
-noting that a very deep Decision Tree may create rules for small groups or individual observations.
-
-Question 4
-Which metric do you think is especially important for phishing detection:
-
-Accuracy
-
-Precision
-
-Recall
-
-F1-score
-
-
-
-1086
+This document was reformatted from the supplied `homework5.txt` output. Its section order, model values, reported results, and analysis are preserved in readable Markdown, with redundant separator lines and Google Colab HTML/CSS/JavaScript table-display artifacts omitted. The original text ends with the isolated number `1086`, which is not identified as part of an answer or metric and is therefore not presented as a result. No external references or experimental results have been added.
